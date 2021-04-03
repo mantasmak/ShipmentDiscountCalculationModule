@@ -29,6 +29,6 @@ namespace ShipmentDiscountCalculationModule.Application.Strategies
             return _accumulatedDiscountLimit - accumulatedDiscount;
         }
 
-        abstract protected bool AddDiscountToTransaction(Transaction newTransaction, IEnumerable<Transaction> transactionHistory, decimal remainingDiscount, IEnumerable<ShippingPriceDetails> shippingPriceDetails);
+        abstract protected bool AddDiscountToTransaction(Transaction transaction, IEnumerable<Transaction> transactionHistory, decimal remainingDiscount, IEnumerable<ShippingPriceDetails> shippingPriceDetails);
     }
 }

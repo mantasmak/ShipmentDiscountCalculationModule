@@ -6,15 +6,15 @@ namespace ShipmentDiscountCalculationModule.Application.Strategies
 {
     class LowestSDiscountStrategy : BaseLimitDiscountStrategy
     {
-        protected override bool AddDiscountToTransaction(Transaction newTransaction, IEnumerable<Transaction> transactionHistory, decimal remainingDiscount, IEnumerable<ShippingPriceDetails> shippingPriceDetails)
+        protected override bool AddDiscountToTransaction(Transaction transaction, IEnumerable<Transaction> transactionHistory, decimal remainingDiscount, IEnumerable<ShippingPriceDetails> shippingPriceDetails)
         {
-            if (newTransaction.Size != "S")
+            if (transaction.Size != "S")
                 return false;
 
             var lowestShippingPrice = shippingPriceDetails.Where(d => d.PackageSize == "S")
                                                           .Min(d => d.Price);
 
-            var shippingPriceBeforeDiscount = shippingPriceDetails.Where(d => d.Provider == newTransaction.Provider)
+            var shippingPriceBeforeDiscount = shippingPriceDetails.Where(d => d.Provider == transaction.Provider)
                                                                   .Where(d => d.PackageSize == "S")
                                                                   .FirstOrDefault()
                                                                   .Price;
@@ -23,17 +23,17 @@ namespace ShipmentDiscountCalculationModule.Application.Strategies
 
             if (discount == 0)
                 return false;
-
+            
             if (remainingDiscount >= discount)
             {
-                newTransaction.ShippingPrice = lowestShippingPrice;
-                newTransaction.Discount = discount;
+                transaction.ShippingPrice = lowestShippingPrice;
+                transaction.Discount = discount;
 
                 return true;
             }
 
-            newTransaction.ShippingPrice = shippingPriceBeforeDiscount - remainingDiscount;
-            newTransaction.Discount = remainingDiscount;
+            transaction.ShippingPrice = shippingPriceBeforeDiscount - remainingDiscount;
+            transaction.Discount = remainingDiscount;
 
             return true;
         }
