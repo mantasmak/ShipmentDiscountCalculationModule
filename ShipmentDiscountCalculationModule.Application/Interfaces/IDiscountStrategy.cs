@@ -5,6 +5,6 @@ namespace ShipmentDiscountCalculationModule.Application.Interfaces
 {
     interface IDiscountStrategy
     {
-        Transaction CalculateDiscount(IEnumerable<Transaction> transactionHistory, Transaction newTransaction, IEnumerable<ShippingPriceDetails> shippingPriceDetails);
+        bool TryApplyDiscount(Transaction newTransaction, IEnumerable<Transaction> transactionHistory, IEnumerable<ShippingPriceDetails> shippingPriceDetails);
     }
 }

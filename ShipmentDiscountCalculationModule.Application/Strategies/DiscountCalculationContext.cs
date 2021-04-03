@@ -6,30 +6,19 @@ namespace ShipmentDiscountCalculationModule.Application.Strategies
 {
     public class DiscountCalculationContext : IDiscountCalculationContext
     {
-        public IEnumerable<Transaction> ApplyDiscount(IEnumerable<Transaction> transactionHistory, IEnumerable<ShippingPriceDetails> shippingPriceDetails)
+        public void ApplyDiscount(IEnumerable<Transaction> transactionHistory, IEnumerable<ShippingPriceDetails> shippingPriceDetails)
         {
-            var transactionsWithDiscounts = new List<Transaction>();
+            var lowestSDiscountStrategy = new LowestSDiscountStrategy();
+            var freeLDiscountStrategy = new FreeLDiscountStrategy();
 
-            foreach(var newTransaction in transactionHistory)
+            foreach (var transaction in transactionHistory)
             {
-                if (newTransaction.Size.Equals("S"))
-                {
-                    var lowestSPriceStrategy = new LowestSDiscountStrategy();
-                    transactionsWithDiscounts.Add(lowestSPriceStrategy.CalculateDiscount(transactionsWithDiscounts, newTransaction, shippingPriceDetails));
+                if (lowestSDiscountStrategy.TryApplyDiscount(transaction, transactionHistory, shippingPriceDetails))
                     continue;
-                }
 
-                if(newTransaction.Size.Equals("L") && newTransaction.Provider.Equals("LP"))
-                {
-                    var freeLStrategy = new FreeLDiscountStrategy();
-                    transactionsWithDiscounts.Add(freeLStrategy.CalculateDiscount(transactionsWithDiscounts, newTransaction, shippingPriceDetails));
+                if(freeLDiscountStrategy.TryApplyDiscount(transaction, transactionHistory, shippingPriceDetails))
                     continue;
-                }
-
-                transactionsWithDiscounts.Add(newTransaction);
             }
-
-            return transactionsWithDiscounts;
         }
     }
 }

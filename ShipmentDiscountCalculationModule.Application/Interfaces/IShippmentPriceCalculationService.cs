@@ -2,6 +2,6 @@
 {
     public interface IShippmentPriceCalculationService
     {
-        string GetDiscount(string transactionHistory, string shippingPriceDetails);
+        string AddDiscount(string transactionHistory, string shippingPriceDetails);
     }
 }

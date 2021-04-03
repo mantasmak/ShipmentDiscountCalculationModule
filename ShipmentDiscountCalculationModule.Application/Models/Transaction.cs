@@ -9,9 +9,18 @@ namespace ShipmentDiscountCalculationModule.Application.Models
         public string Provider { get; set; }
         public decimal ShippingPrice { get; set; }
         public decimal Discount { get; set; }
+        public string RawText { get; set; }
         public bool WrongTransactionFormat { get; set; } = false;
 
-        public override string ToString() => Discount == 0 ? $"{Date.ToShortDateString()} {Size} {Provider} {ShippingPrice:N2} -" 
-                                                           : $"{Date.ToShortDateString()} {Size} {Provider} {ShippingPrice:N2} {Discount:N2}";
+        public override string ToString()
+        {
+            if (WrongTransactionFormat)
+                return $"{RawText} Ignored";
+
+            if (Discount == 0)
+                return $"{Date.ToShortDateString()} {Size} {Provider} {ShippingPrice:N2} -";
+            else
+                return $"{Date.ToShortDateString()} {Size} {Provider} {ShippingPrice:N2} {Discount:N2}";
+        }
     }
 }

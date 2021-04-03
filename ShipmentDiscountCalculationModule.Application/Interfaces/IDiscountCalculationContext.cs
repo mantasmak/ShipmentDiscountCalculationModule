@@ -5,6 +5,6 @@ namespace ShipmentDiscountCalculationModule.Application.Interfaces
 {
     public interface IDiscountCalculationContext
     {
-        IEnumerable<Transaction> ApplyDiscount(IEnumerable<Transaction> transactionHistory, IEnumerable<ShippingPriceDetails> shippingPriceDetails);
+        void ApplyDiscount(IEnumerable<Transaction> transactionHistory, IEnumerable<ShippingPriceDetails> shippingPriceDetails);
     }
 }

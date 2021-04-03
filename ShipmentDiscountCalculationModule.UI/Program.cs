@@ -11,40 +11,35 @@ namespace ShipmentDiscountCalculationModule.UI
     {
         static void Main()
         {
-            string transactionHistory = String.Empty;
-            string shippingPriceDetails = String.Empty;
+            var inputPath = Path.Combine(Environment.CurrentDirectory, @"Data\", "input.txt");
+            var shippingPriceDetailsPath = Path.Combine(Environment.CurrentDirectory, @"Data\", "shippingPriceDetails.txt");
 
-            try
-            {
-                var inputPath = Path.Combine(Environment.CurrentDirectory, @"Data\", "input.txt");
-
-                using (var streamReader = new StreamReader(inputPath))
-                {
-                    transactionHistory = streamReader.ReadToEnd();
-                }
-
-                var shippingPriceDetailsPath = Path.Combine(Environment.CurrentDirectory, @"Data\", "shippingPriceDetails.txt");
-
-                using (var streamReader = new StreamReader(shippingPriceDetailsPath))
-                {
-                    shippingPriceDetails = streamReader.ReadToEnd();
-                }
-            }
-            catch(FileNotFoundException e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            var transactionHistory = ReadFile(inputPath);
+            var shippingPriceDetails = ReadFile(shippingPriceDetailsPath);
 
             if (String.IsNullOrEmpty(transactionHistory) || String.IsNullOrEmpty(shippingPriceDetails))
                 return;
 
             var shippmentCalculationService = new ShippmentPriceCalculationService(new TransactionHistoryParser(), new TransactionValidator(), new ShippingPriceDetailsParser(), new ShippingPriceDetailsValidator(), new DiscountCalculationContext());
 
-            Console.WriteLine(shippmentCalculationService.GetDiscount(transactionHistory, shippingPriceDetails));
+            Console.WriteLine(shippmentCalculationService.AddDiscount(transactionHistory, shippingPriceDetails));
+        }
+
+        static private string ReadFile(string path)
+        {
+            var fileContent = String.Empty;
+
+            try
+            {
+                using var streamReader = new StreamReader(path);
+                fileContent = streamReader.ReadToEnd();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            return fileContent;
         }
     }
 }

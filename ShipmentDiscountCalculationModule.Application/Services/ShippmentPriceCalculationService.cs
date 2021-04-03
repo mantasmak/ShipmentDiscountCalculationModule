@@ -14,7 +14,10 @@ namespace ShipmentDiscountCalculationModule.Application.Services
         private readonly IValidator _shippingPriceDetailsValidator;
         private readonly IDiscountCalculationContext _discountCalculationContext;
 
-        public ShippmentPriceCalculationService(IParser<Transaction> transactionHistoryParser, IValidator transactionValidator, IParser<ShippingPriceDetails> shippingPriceDetailsParser, IValidator shippingPriceDetailsValidator, IDiscountCalculationContext discountCalculationContext)
+        public ShippmentPriceCalculationService(
+            IParser<Transaction> transactionHistoryParser, IValidator transactionValidator, 
+            IParser<ShippingPriceDetails> shippingPriceDetailsParser, IValidator shippingPriceDetailsValidator, 
+            IDiscountCalculationContext discountCalculationContext)
         {
             _transactionHistoryParser = transactionHistoryParser;
             _transactionValidator = transactionValidator;
@@ -24,23 +27,20 @@ namespace ShipmentDiscountCalculationModule.Application.Services
 
         }
 
-        public string GetDiscount(string transactionHistory, string shippingPriceDetails)
+        public string AddDiscount(string transactionHistory, string shippingPriceDetails)
         {
             var parsedShippingPriceDetails = _shippingPriceDetailsParser.Parse(shippingPriceDetails, _shippingPriceDetailsValidator);
-
             var parsedTransactions = _transactionHistoryParser.Parse(transactionHistory, _transactionValidator);
 
-            var transactionsWithPrices = AddPricesBeforeDiscount(parsedTransactions, parsedShippingPriceDetails);
+            AddPricesBeforeDiscount(parsedTransactions, parsedShippingPriceDetails);
 
-            var transactionsWithDiscount = _discountCalculationContext.ApplyDiscount(transactionsWithPrices, parsedShippingPriceDetails);
+            _discountCalculationContext.ApplyDiscount(parsedTransactions, parsedShippingPriceDetails);
 
-            return ConvertTransactionsToString(transactionsWithDiscount, transactionHistory);
+            return ConvertTransactionsToString(parsedTransactions);
         }
 
-        private IEnumerable<Transaction> AddPricesBeforeDiscount(IEnumerable<Transaction> transactions, IEnumerable<ShippingPriceDetails> shippingPriceDetails)
+        private void AddPricesBeforeDiscount(IEnumerable<Transaction> transactions, IEnumerable<ShippingPriceDetails> shippingPriceDetails)
         {
-            var transactionsWithPrices = new List<Transaction>();
-
             foreach(var transaction in transactions)
             {
                 var shippingPrice = shippingPriceDetails.Where(d => d.Provider == transaction.Provider)
@@ -50,27 +50,16 @@ namespace ShipmentDiscountCalculationModule.Application.Services
 
                 transaction.ShippingPrice = shippingPrice;
                 transaction.Discount = 0;
-                transactionsWithPrices.Add(transaction);
             }
-
-            return transactionsWithPrices;
         }
 
-        private string ConvertTransactionsToString(IEnumerable<Transaction> transactions, string transactionHistory)
+        private string ConvertTransactionsToString(IEnumerable<Transaction> transactions)
         {
-            var splitTransactions = transactionHistory.Split("\r\n");
             var stringBuilder = new StringBuilder();
 
-            for (int i = 0 ; i < transactions.Count() ; i++)
+            foreach(var transaction in transactions)
             {
-                if (transactions.ElementAt(i).WrongTransactionFormat)
-                {
-                    stringBuilder.AppendLine($"{splitTransactions[i]} Ignored");
-                }
-                else
-                {
-                    stringBuilder.AppendLine(transactions.ElementAt(i).ToString());
-                }
+                stringBuilder.AppendLine(transaction.ToString());
             }
 
             return stringBuilder.ToString();

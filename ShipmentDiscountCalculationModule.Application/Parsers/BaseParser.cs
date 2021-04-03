@@ -13,26 +13,13 @@ namespace ShipmentDiscountCalculationModule.Application.Parsers
 
             foreach (var textLine in textLines)
             {
-                if (validator != null)
-                {
-                    if(!validator.IsValid(textLine))
-                    {
-                        //Bad design. Could not figure out how to handle validation properly
-                        parsedText.Add(GetInvalidObject());
-
-                        continue;
-                    }
-                }
-
                 var textLineElements = textLine.Split(' ');
-                parsedText.Add(GetNewConcreteObject(textLineElements));
+                parsedText.Add(GetNewConcreteObject(textLineElements, validator));
             }
 
             return parsedText;
         }
 
-        protected abstract T GetNewConcreteObject(IEnumerable<string> properties);
-
-        protected abstract T GetInvalidObject();
+        protected abstract T GetNewConcreteObject(IEnumerable<string> properties, IValidator validator = null);
     }
 }

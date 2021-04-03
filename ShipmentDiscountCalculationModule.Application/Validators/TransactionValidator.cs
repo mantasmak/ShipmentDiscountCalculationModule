@@ -1,24 +1,24 @@
 ﻿using ShipmentDiscountCalculationModule.Application.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ShipmentDiscountCalculationModule.Application.Validators
 {
     public class TransactionValidator : IValidator
     {
-        public bool IsValid(string text)
+        public bool IsValid(IEnumerable<string> textLine)
         {
-            var transactionElements = text.Split(' ');
-
-            if (transactionElements.Length != 3)
+            if (textLine.Count() != 3)
                 return false;
 
-            if (!IsDateValid(transactionElements[0]))
+            if (!IsDateValid(textLine.ElementAt(0)))
                 return false;
 
-            if (!IsSizeValid(transactionElements[1]))
+            if (!IsSizeValid(textLine.ElementAt(1)))
                 return false;
 
-            if (!IsProviderValid(transactionElements[2]))
+            if (!IsProviderValid(textLine.ElementAt(2)))
                 return false;
 
             return true;
