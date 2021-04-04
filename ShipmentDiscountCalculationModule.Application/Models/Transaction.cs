@@ -12,6 +12,14 @@ namespace ShipmentDiscountCalculationModule.Application.Models
         public string RawText { get; set; }
         public bool WrongTransactionFormat { get; set; } = false;
 
+        public bool IsEmpty()
+        {
+            if (Date == null && Size == null && Provider == null && ShippingPrice == 0 && Discount == 0 && RawText == null && WrongTransactionFormat == false)
+                return true;
+            else
+                return false;
+        }
+
         public override string ToString()
         {
             if (WrongTransactionFormat)

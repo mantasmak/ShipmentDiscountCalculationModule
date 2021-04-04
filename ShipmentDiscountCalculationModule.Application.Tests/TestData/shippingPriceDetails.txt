@@ -1,6 +1,0 @@
-LP S 1.5
-LP M 4.9
-LP L 6.9
-MR S 2
-MR M 3
-MR L 4

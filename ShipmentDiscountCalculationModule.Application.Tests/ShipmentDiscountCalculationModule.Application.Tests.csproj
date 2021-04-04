@@ -26,12 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\transactions.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\shippingPriceDetails.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\ShipmentDiscountCalculationModule.Application\ShipmentDiscountCalculationModule.Application.csproj" />
   </ItemGroup>
 
 </Project>

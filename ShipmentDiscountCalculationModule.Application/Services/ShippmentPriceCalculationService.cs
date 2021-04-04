@@ -43,14 +43,19 @@ namespace ShipmentDiscountCalculationModule.Application.Services
         {
             foreach(var transaction in transactions)
             {
-                var shippingPrice = shippingPriceDetails.Where(d => d.Provider == transaction.Provider)
-                                                        .Where(d => d.PackageSize == transaction.Size)
-                                                        .Select(d => d.Price)
-                                                        .FirstOrDefault();
+                var shippingPrice = GetShipShippingPrice(transaction, shippingPriceDetails);
 
                 transaction.ShippingPrice = shippingPrice;
                 transaction.Discount = 0;
             }
+        }
+
+        private decimal GetShipShippingPrice(Transaction transaction, IEnumerable<ShippingPriceDetails> shippingPriceDetails)
+        {
+            return shippingPriceDetails.Where(d => d.Provider == transaction.Provider)
+                                       .Where(d => d.PackageSize == transaction.Size)
+                                       .Select(d => d.Price)
+                                       .FirstOrDefault();
         }
 
         private string ConvertTransactionsToString(IEnumerable<Transaction> transactions)
