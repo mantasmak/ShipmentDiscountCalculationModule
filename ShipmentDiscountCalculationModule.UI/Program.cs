@@ -20,7 +20,10 @@ namespace ShipmentDiscountCalculationModule.UI
             if (String.IsNullOrEmpty(transactionHistory) || String.IsNullOrEmpty(shippingPriceDetails))
                 return;
 
-            var shippmentCalculationService = new ShippmentPriceCalculationService(new TransactionHistoryParser(), new TransactionValidator(), new ShippingPriceDetailsParser(), new ShippingPriceDetailsValidator(), new DiscountCalculationContext());
+            var transactionHistoryParser = new TransactionHistoryParser(new TransactionValidator());
+            var shippingPriceDetailsParser = new ShippingPriceDetailsParser(new ShippingPriceDetailsValidator());
+
+            var shippmentCalculationService = new ShippmentPriceCalculationService(transactionHistoryParser, shippingPriceDetailsParser, new DiscountStrategyContext());
 
             Console.WriteLine(shippmentCalculationService.AddDiscount(transactionHistory, shippingPriceDetails));
         }

@@ -4,6 +4,6 @@ namespace ShipmentDiscountCalculationModule.Application.Interfaces
 {
     public interface IValidator
     {
-        public bool IsValid(IEnumerable<string> textLine);
+        public bool IsValid(string text);
     }
 }

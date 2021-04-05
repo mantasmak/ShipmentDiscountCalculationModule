@@ -47,7 +47,7 @@ namespace ShipmentDiscountCalculationModule.Application.Tests.Strategies
         }
 
         [Fact]
-        public void TryApplyDiscount_ExceedanceOfMonthlyDiscountShouldReturnFalse()
+        public void TryApplyDiscount_ExceedanceOfMonthlyDiscountShouldNotAddDiscount()
         {
             var transaction = new Transaction
             {
@@ -55,7 +55,7 @@ namespace ShipmentDiscountCalculationModule.Application.Tests.Strategies
                 Size = "L",
                 Provider = "LP",
                 ShippingPrice = 1.5M,
-                RawText = "2020-05-11 S MR"
+                RawText = "2020-05-11 L LP"
             };
 
             var transactionHistory = new List<Transaction>();
@@ -69,7 +69,7 @@ namespace ShipmentDiscountCalculationModule.Application.Tests.Strategies
                     Provider = "LP",
                     ShippingPrice = 0,
                     Discount = 5M,
-                    RawText = "2020-05-11 S MR"
+                    RawText = "2020-05-11 L LP"
                 });
             }
 
@@ -93,57 +93,9 @@ namespace ShipmentDiscountCalculationModule.Application.Tests.Strategies
 
             var attempt = freeLDiscountStrategy.TryApplyDiscount(transaction, transactionHistory, shippingPriceDetails);
 
-            Assert.False(attempt);
-        }
-
-        [Fact]
-        public void TryApplyDiscount_ExceedanceOfMonthlyDiscountShouldNotAddDiscount()
-        {
-            var transaction = new Transaction
-            {
-                Date = new DateTime(2020, 5, 11),
-                Size = "L",
-                Provider = "LP",
-                ShippingPrice = 1.5M,
-                RawText = "2020-05-11 S MR"
-            };
-
-            var transactionHistory = new List<Transaction>();
-
-            for (int i = 0; i < 2; i++)
-            {
-                transactionHistory.Add(new Transaction()
-                {
-                    Date = new DateTime(2020, 5, 11),
-                    Size = "L",
-                    Provider = "LP",
-                    ShippingPrice = 0,
-                    Discount = 5M,
-                    RawText = "2020-05-11 S MR"
-                });
-            }
-
-            var shippingPriceDetails = new List<ShippingPriceDetails>()
-            {
-                new ShippingPriceDetails()
-                {
-                    Provider = "LP",
-                    PackageSize = "L",
-                    Price = 6.9M
-                },
-                new ShippingPriceDetails()
-                {
-                    Provider = "MR",
-                    PackageSize = "L",
-                    Price = 4
-                }
-            };
-
-            var freeLDiscountStrategy = new FreeLDiscountStrategy();
-
-            freeLDiscountStrategy.TryApplyDiscount(transaction, transactionHistory, shippingPriceDetails);
-
+            Assert.Equal(1.5M, transaction.ShippingPrice);
             Assert.Equal(0, transaction.Discount);
+            Assert.False(attempt);
         }
 
         [Fact]
@@ -156,6 +108,7 @@ namespace ShipmentDiscountCalculationModule.Application.Tests.Strategies
 
             var attempt = freeLDiscountStrategy.TryApplyDiscount(transaction, transactionHistory, shippingPriceDetails);
 
+            Assert.Equal(0, transaction.ShippingPrice);
             Assert.Equal(0, transaction.Discount);
             Assert.False(attempt);
         }
@@ -170,6 +123,7 @@ namespace ShipmentDiscountCalculationModule.Application.Tests.Strategies
 
             var attempt = freeLDiscountStrategy.TryApplyDiscount(transaction, transactionHistory, shippingPriceDetails);
 
+            Assert.Equal(0, transaction.ShippingPrice);
             Assert.Equal(0, transaction.Discount);
             Assert.False(attempt);
         }
@@ -184,6 +138,7 @@ namespace ShipmentDiscountCalculationModule.Application.Tests.Strategies
 
             var attempt = freeLDiscountStrategy.TryApplyDiscount(transaction, transactionHistory, shippingPriceDetails);
 
+            Assert.Equal(0, transaction.ShippingPrice);
             Assert.Equal(0, transaction.Discount);
             Assert.False(attempt);
         }
@@ -197,7 +152,8 @@ namespace ShipmentDiscountCalculationModule.Application.Tests.Strategies
                 Size = "L",
                 Provider = "LP",
                 ShippingPrice = 6.9M,
-                RawText = "2020-05-11 S MR"
+                Discount = 0,
+                RawText = "2020-05-11 L LP"
             };
 
             var transactionHistory = new List<Transaction>();
@@ -211,9 +167,10 @@ namespace ShipmentDiscountCalculationModule.Application.Tests.Strategies
                     Provider = "LP",
                     ShippingPrice = 6.9M,
                     Discount = 0,
-                    RawText = "2020-05-11 S MR"
+                    RawText = "2020-05-11 L LP"
                 });
             }
+            transactionHistory.Add(transaction);
 
             var shippingPriceDetails = new List<ShippingPriceDetails>()
             {
@@ -249,7 +206,8 @@ namespace ShipmentDiscountCalculationModule.Application.Tests.Strategies
                 Size = "L",
                 Provider = "LP",
                 ShippingPrice = 6.9M,
-                RawText = "2020-05-11 S MR"
+                Discount = 0,
+                RawText = "2020-05-11 L LP"
             };
 
             var transactionHistory = new List<Transaction>();
@@ -259,13 +217,23 @@ namespace ShipmentDiscountCalculationModule.Application.Tests.Strategies
                 transactionHistory.Add(new Transaction()
                 {
                     Date = new DateTime(2020, 5, 11),
-                    Size = "L",
+                    Size = "S",
                     Provider = "LP",
                     ShippingPrice = 6.9M,
                     Discount = 4,
-                    RawText = "2020-05-11 S MR"
+                    RawText = "2020-05-11 L LP"
+                });
+                transactionHistory.Add(new Transaction()
+                {
+                    Date = new DateTime(2020, 5, 11),
+                    Size = "L",
+                    Provider = "LP",
+                    ShippingPrice = 6.9M,
+                    Discount = 0,
+                    RawText = "2020-05-11 L LP"
                 });
             }
+            transactionHistory.Add(transaction);
 
             var shippingPriceDetails = new List<ShippingPriceDetails>()
             {

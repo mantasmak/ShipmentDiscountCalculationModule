@@ -1,32 +1,32 @@
 ﻿using ShipmentDiscountCalculationModule.Application.Interfaces;
 using ShipmentDiscountCalculationModule.Application.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace ShipmentDiscountCalculationModule.Application.Parsers
 {
     public class TransactionHistoryParser : BaseParser<Transaction>
     {
-        protected override Transaction GetNewConcreteObject(IEnumerable<string> properties, IValidator validator = null)
+        public TransactionHistoryParser(IValidator validator) : base(validator) { }
+
+        protected override Transaction GetParsedObject(string textLine)
         {
-            if (validator != null)
+            if (!_validator.IsValid(textLine))
             {
-                if (!validator.IsValid(properties))
+                return new Transaction
                 {
-                    return new Transaction
-                    {
-                        WrongTransactionFormat = true,
-                        RawText = String.Join(" ", properties)
-                    };
-                }
+                    WrongTransactionFormat = true,
+                    RawText = textLine
+                };
             }
+
+            var properties = textLine.Split(' ');
 
             return new Transaction
             {
-                Date = DateTime.Parse(properties.ElementAt(0)),
-                Size = properties.ElementAt(1),
-                Provider = properties.ElementAt(2),
+                Date = DateTime.Parse(properties[0]),
+                Size = properties[1],
+                Provider = properties[2],
                 RawText = String.Join(" ", properties)
             };
         }

@@ -1,28 +1,28 @@
 ﻿using ShipmentDiscountCalculationModule.Application.Interfaces;
 using ShipmentDiscountCalculationModule.Application.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace ShipmentDiscountCalculationModule.Application.Parsers
 {
     public class ShippingPriceDetailsParser : BaseParser<ShippingPriceDetails>
     {
-        protected override ShippingPriceDetails GetNewConcreteObject(IEnumerable<string> properties, IValidator validator = null)
+        public ShippingPriceDetailsParser(IValidator validator) : base(validator) { }
+
+        protected override ShippingPriceDetails GetParsedObject(string textLine)
         {
-            if(validator != null)
+            if(!_validator.IsValid(textLine))
             {
-                if(!validator.IsValid(properties))
-                {
-                    return new ShippingPriceDetails();
-                }
+                return new ShippingPriceDetails();
             }
+
+            var properties = textLine.Split(' ');
 
             return new ShippingPriceDetails
             {
-                Provider = properties.ElementAt(0),
-                PackageSize = properties.ElementAt(1),
-                Price = Convert.ToDecimal(properties.ElementAt(2))
+                Provider = properties[0],
+                PackageSize = properties[1],
+                Price = Convert.ToDecimal(properties[2])
             };
         }
     }

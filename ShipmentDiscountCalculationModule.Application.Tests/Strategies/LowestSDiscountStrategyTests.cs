@@ -93,6 +93,7 @@ namespace ShipmentDiscountCalculationModule.Application.Tests.Strategies
 
             var attempt = lowestSDiscountStrategy.TryApplyDiscount(transaction, transactionHistory, shippingPriceDetails);
 
+            Assert.Equal(1.5M, transaction.ShippingPrice);
             Assert.Equal(0, transaction.Discount);
             Assert.False(attempt);
         }
@@ -107,6 +108,7 @@ namespace ShipmentDiscountCalculationModule.Application.Tests.Strategies
 
             var attempt = lowestSDiscountStrategy.TryApplyDiscount(transaction, transactionHistory, shippingPriceDetails);
 
+            Assert.Equal(0, transaction.ShippingPrice);
             Assert.Equal(0, transaction.Discount);
             Assert.False(attempt);
         }
@@ -156,6 +158,7 @@ namespace ShipmentDiscountCalculationModule.Application.Tests.Strategies
 
             var attempt = lowestSDiscountStrategy.TryApplyDiscount(transaction, transactionHistory, shippingPriceDetails);
 
+            Assert.Equal(1.5M, transaction.ShippingPrice);
             Assert.Equal(0, transaction.Discount);
             Assert.False(attempt);
         }

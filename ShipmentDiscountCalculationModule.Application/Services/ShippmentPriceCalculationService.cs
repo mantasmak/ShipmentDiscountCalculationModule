@@ -3,38 +3,36 @@ using ShipmentDiscountCalculationModule.Application.Models;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System;
 
 namespace ShipmentDiscountCalculationModule.Application.Services
 {
     public class ShippmentPriceCalculationService : IShippmentPriceCalculationService
     {
         private readonly IParser<Transaction> _transactionHistoryParser;
-        private readonly IValidator _transactionValidator;
         private readonly IParser<ShippingPriceDetails> _shippingPriceDetailsParser;
-        private readonly IValidator _shippingPriceDetailsValidator;
-        private readonly IDiscountCalculationContext _discountCalculationContext;
+        private readonly IDiscountStrategyContext _discountStrategyContext;
 
         public ShippmentPriceCalculationService(
-            IParser<Transaction> transactionHistoryParser, IValidator transactionValidator, 
-            IParser<ShippingPriceDetails> shippingPriceDetailsParser, IValidator shippingPriceDetailsValidator, 
-            IDiscountCalculationContext discountCalculationContext)
+            IParser<Transaction> transactionHistoryParser, IParser<ShippingPriceDetails> shippingPriceDetailsParser, IDiscountStrategyContext discountStrategyContext)
         {
             _transactionHistoryParser = transactionHistoryParser;
-            _transactionValidator = transactionValidator;
             _shippingPriceDetailsParser = shippingPriceDetailsParser;
-            _shippingPriceDetailsValidator = shippingPriceDetailsValidator;
-            _discountCalculationContext = discountCalculationContext;
+            _discountStrategyContext = discountStrategyContext;
 
         }
 
         public string AddDiscount(string transactionHistory, string shippingPriceDetails)
         {
-            var parsedShippingPriceDetails = _shippingPriceDetailsParser.Parse(shippingPriceDetails, _shippingPriceDetailsValidator);
-            var parsedTransactions = _transactionHistoryParser.Parse(transactionHistory, _transactionValidator);
+            if (transactionHistory == null || shippingPriceDetails == null)
+                throw new ArgumentNullException();
+
+            var parsedShippingPriceDetails = _shippingPriceDetailsParser.Parse(shippingPriceDetails);
+            var parsedTransactions = _transactionHistoryParser.Parse(transactionHistory);
 
             AddPricesBeforeDiscount(parsedTransactions, parsedShippingPriceDetails);
 
-            _discountCalculationContext.ApplyDiscount(parsedTransactions, parsedShippingPriceDetails);
+            _discountStrategyContext.ApplyDiscount(parsedTransactions, parsedShippingPriceDetails);
 
             return ConvertTransactionsToString(parsedTransactions);
         }

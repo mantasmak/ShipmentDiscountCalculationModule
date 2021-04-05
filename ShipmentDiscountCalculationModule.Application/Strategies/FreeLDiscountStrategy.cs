@@ -32,12 +32,25 @@ namespace ShipmentDiscountCalculationModule.Application.Strategies
             if (transaction.Size != "L" || transaction.Provider != "LP")
                 return false;
 
+            if (ThisMonthdiscountAlreadyApplied(transaction, transactionHistory))
+                return false;
+
             var numOfEligibleMonths = GetNumOfEligibleMonths(transaction, transactionHistory);
 
-            if (numOfEligibleMonths != 2)
+            if (numOfEligibleMonths != 3)
                 return false;
 
             return true;
+        }
+
+        private bool ThisMonthdiscountAlreadyApplied(Transaction transaction, IEnumerable<Transaction> transactionHistory)
+        {
+            return transactionHistory.Where(t => t.Date.Month == transaction.Date.Month)
+                                     .Where(t => t.Date <= transaction.Date)
+                                     .Where(t => t.Size == "L")
+                                     .Where(t => t.Provider == "LP")
+                                     .Where(t => t.Discount > 0)
+                                     .Any();
         }
 
         private decimal GetNumOfEligibleMonths(Transaction transaction, IEnumerable<Transaction> transactionHistory)

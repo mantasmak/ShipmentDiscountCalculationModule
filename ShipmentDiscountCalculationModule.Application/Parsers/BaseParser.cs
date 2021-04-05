@@ -1,25 +1,35 @@
 ﻿using ShipmentDiscountCalculationModule.Application.Interfaces;
+using System;
 using System.Collections.Generic;
 
 namespace ShipmentDiscountCalculationModule.Application.Parsers
 {
     public abstract class BaseParser<T> : IParser<T>
     {
-        public IEnumerable<T> Parse(string text, IValidator validator = null)
+        protected readonly IValidator _validator;
+
+        public BaseParser(IValidator validator)
         {
+            _validator = validator;
+        }
+
+        public IEnumerable<T> Parse(string text)
+        {
+            if (text == null)
+                throw new ArgumentNullException();
+            
             var parsedText = new List<T>();
 
             var textLines = text.Split("\r\n");
 
             foreach (var textLine in textLines)
             {
-                var textLineElements = textLine.Split(' ');
-                parsedText.Add(GetNewConcreteObject(textLineElements, validator));
+                parsedText.Add(GetParsedObject(textLine));
             }
 
             return parsedText;
         }
 
-        protected abstract T GetNewConcreteObject(IEnumerable<string> properties, IValidator validator = null);
+        protected abstract T GetParsedObject(string textLine);
     }
 }

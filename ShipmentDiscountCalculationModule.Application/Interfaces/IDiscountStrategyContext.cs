@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ShipmentDiscountCalculationModule.Application.Interfaces
 {
-    public interface IDiscountCalculationContext
+    public interface IDiscountStrategyContext
     {
         void ApplyDiscount(IEnumerable<Transaction> transactionHistory, IEnumerable<ShippingPriceDetails> shippingPriceDetails);
     }
