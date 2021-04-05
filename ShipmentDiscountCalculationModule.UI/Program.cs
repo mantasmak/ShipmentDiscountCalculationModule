@@ -3,16 +3,26 @@ using ShipmentDiscountCalculationModule.Application.Validators;
 using ShipmentDiscountCalculationModule.Application.Services;
 using ShipmentDiscountCalculationModule.Application.Strategies;
 using System;
+using System.Linq;
 using System.IO;
 
 namespace ShipmentDiscountCalculationModule.UI
 {
     class Program
     {
-        static void Main()
+        static void Main(string[] args)
         {
-            var inputPath = Path.Combine(Environment.CurrentDirectory, @"Data\", "input.txt");
-            var shippingPriceDetailsPath = Path.Combine(Environment.CurrentDirectory, @"Data\", "shippingPriceDetails.txt");
+            var inputFileName = "input.txt";
+            var shippingPriceDetailsFileName = "shippingPriceDetails.txt";
+
+            if (args.Length == 2)
+            {
+                inputFileName = args[0];
+                shippingPriceDetailsFileName = args[1];
+            }
+
+            var inputPath = Path.Combine(Environment.CurrentDirectory, @"Data\", inputFileName);
+            var shippingPriceDetailsPath = Path.Combine(Environment.CurrentDirectory, @"Data\", shippingPriceDetailsFileName);
 
             var transactionHistory = ReadFile(inputPath);
             var shippingPriceDetails = ReadFile(shippingPriceDetailsPath);
