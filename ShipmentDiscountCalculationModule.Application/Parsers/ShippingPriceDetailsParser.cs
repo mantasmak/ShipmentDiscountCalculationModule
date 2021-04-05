@@ -15,7 +15,7 @@ namespace ShipmentDiscountCalculationModule.Application.Parsers
             {
                 return new ShippingPriceDetails();
             }
-
+            
             var properties = textLine.Split(' ');
 
             return new ShippingPriceDetails

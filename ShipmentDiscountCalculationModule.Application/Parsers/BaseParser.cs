@@ -19,8 +19,8 @@ namespace ShipmentDiscountCalculationModule.Application.Parsers
                 throw new ArgumentNullException();
             
             var parsedText = new List<T>();
-
-            var textLines = text.Split("\r\n");
+            
+            var textLines = text.Split(Environment.NewLine);
 
             foreach (var textLine in textLines)
             {
